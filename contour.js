@@ -229,7 +229,7 @@ function createContour2D(plot, options) {
     idBuffer)
 
   contours.update(options)
-  plot.addObject(heatmap)
+  plot.addObject(contours)
 
   return contours
 }
