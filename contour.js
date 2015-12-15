@@ -32,7 +32,7 @@ function GLContour2D(
   this.lineWidth      = 1
 }
 
-var proto = GLHeatmap2D.prototype
+var proto = GLContour2D.prototype
 
 var WEIGHTS = [
   0, 0,
