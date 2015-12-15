@@ -3,7 +3,6 @@
 module.exports = createContour2D
 
 var iota          = require('iota-array')
-var pool          = require('typedarray-pool')
 var createShader  = require('gl-shader')
 var createBuffer  = require('gl-buffer')
 var ndarray       = require('ndarray')
