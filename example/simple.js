@@ -1,7 +1,7 @@
 var fit = require('canvas-fit')
 var mouseWheel = require('mouse-wheel')
 var mouseChange = require('mouse-change')
-var createContour = require('gl-contour2d')
+var createContour = require('../contour')
 var createSelectBox = require('gl-select-box')
 var createSpikes = require('gl-spikes2d')
 var createPlot = require('gl-plot2d')
@@ -49,8 +49,8 @@ var spikes = createSpikes(plot)
 
 var z = new Array(5*20)
 var ptr = 0
-for(var j=0; j<20; ++j)
-for(var i=0; i<5; ++i) {
+for(var i=0; i<5; ++i)
+for(var j=0; j<20; ++j) {
   z[ptr++] = (i * i)/(5*5) + (j * j)/(20*20)
 }
 
@@ -58,12 +58,13 @@ console.time('createContour')
 var heatmap = createContour(plot, {
   z:           z,
   shape:       [5,20],
-  levels: [0, 0.5, 1, 1.5],
+  levels: [0.1, 0.5, 1, 1.5],
+  lineWidth: 4,
   levelColors: [
     0, 0, 1, 1,
     0, 1, 0, 1,
     1, 0, 0, 1,
-    1, 1, 0, 1 
+    1, 1, 0, 1
   ]
 })
 console.timeEnd('createContour')
@@ -158,4 +159,3 @@ function render() {
 }
 
 render()
-

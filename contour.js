@@ -35,8 +35,8 @@ function GLContour2D(
 var proto = GLContour2D.prototype
 
 var WEIGHTS = [
-  0, 0,
   1, 0,
+  0, 0,
   0, 1,
   1, 0,
   1, 1,
@@ -77,20 +77,38 @@ proto.draw = (function() {
 
     shader.bind()
 
+    var lineWidth = this.lineWidth * plot.pixelRatio
+
     var uniforms = shader.uniforms
     uniforms.viewTransform  = MATRIX
     uniforms.screenShape    = SCREEN_SHAPE
-    uniforms.lineWidth      = this.lineWidth * plot.pixelRatio
+    uniforms.lineWidth      = lineWidth
+    uniforms.pointSize      = 1000
 
     var attributes = shader.attributes
+
+    //Draw lines
     this.positionBuffer.bind()
-    attributes.position.pointer(gl.FLOAT, false, 0, 24)
-    attributes.normal.pointer(gl.FLOAT, false, 16, 24)
+    attributes.position.pointer(gl.FLOAT, false, 16, 0)
+    attributes.tangent.pointer(gl.FLOAT, false, 16, 8)
 
     this.colorBuffer.bind()
     attributes.color.pointer(gl.UNSIGNED_BYTE, true)
 
     gl.drawArrays(gl.TRIANGLES, 0, this.numVertices)
+
+    //Draw end caps
+    uniforms.lineWidth = 0
+    uniforms.pointSize = lineWidth
+
+    this.positionBuffer.bind()
+    attributes.position.pointer(gl.FLOAT, false, 16*3, 0)
+    attributes.tangent.pointer(gl.FLOAT, false, 16*3, 8)
+
+    this.colorBuffer.bind()
+    attributes.color.pointer(gl.UNSIGNED_BYTE, true, 4*3, 0)
+
+    gl.drawArrays(gl.POINTS, 0, this.numVertices/3)
   }
 })()
 
@@ -148,6 +166,8 @@ proto.update = function(options) {
   this.xData = x
   this.yData = y
 
+  this.lineWidth = options.lineWidth || 1
+
   var zarray = ndarray(z, shape)
 
   var positions = []
@@ -183,6 +203,7 @@ proto.update = function(options) {
 
       var dx = ax - bx
       var dy = ay - by
+      var dl = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
 
       for(var k=0; k<WEIGHTS.length; k+=2) {
         var wx  = WEIGHTS[k]
@@ -191,8 +212,7 @@ proto.update = function(options) {
 
         positions.push(
           wix * ax + wx * bx,  wix * ay + wx * by,
-          dx,  dy,
-          c_w * wy * dy, -c_w * wy * dx)
+          wy * dx,        wy * dy)
         colors.push(c_r, c_g, c_b, c_a)
         ids.push(pointId)
       }
