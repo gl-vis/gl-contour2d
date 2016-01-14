@@ -113,8 +113,68 @@ proto.draw = (function() {
 })()
 
 proto.drawPick = (function() {
+  var MATRIX = [
+    1, 0, 0,
+    0, 1, 0,
+    0, 0, 1
+  ]
+
+  var SCREEN_SHAPE = [0,0]
+
+  var PICK_VECTOR = [0,0,0,0]
+
   return function(pickOffset) {
-    return pickOffset
+    var plot          = this.plot
+    var shader        = this.pickShader
+    var bounds        = this.bounds
+    var numVertices   = this.numVertices
+
+    var gl            = plot.gl
+    var viewBox       = plot.viewBox
+    var dataBox       = plot.dataBox
+
+    var boundX  = bounds[2]  - bounds[0]
+    var boundY  = bounds[3]  - bounds[1]
+    var dataX   = dataBox[2] - dataBox[0]
+    var dataY   = dataBox[3] - dataBox[1]
+
+    MATRIX[0] = 2.0 * boundX / dataX
+    MATRIX[4] = 2.0 * boundY / dataY
+    MATRIX[6] = 2.0 * (bounds[0] - dataBox[0]) / dataX - 1.0
+    MATRIX[7] = 2.0 * (bounds[1] - dataBox[1]) / dataY - 1.0
+
+    SCREEN_SHAPE[0] = viewBox[2] - viewBox[0]
+    SCREEN_SHAPE[1] = viewBox[3] - viewBox[1]
+
+    for(var i=0; i<4; ++i) {
+      PICK_VECTOR[i] = (pickOffset>>(i*8)) & 0xff
+    }
+
+    this.pickOffset = pickOffset
+
+    shader.bind()
+
+    var lineWidth = this.lineWidth * plot.pixelRatio
+
+    var uniforms = shader.uniforms
+    uniforms.viewTransform  = MATRIX
+    uniforms.screenShape    = SCREEN_SHAPE
+    uniforms.lineWidth      = lineWidth
+    uniforms.pickOffset     = PICK_VECTOR
+
+    var attributes = shader.attributes
+
+    //Draw lines
+    this.positionBuffer.bind()
+    attributes.position.pointer(gl.FLOAT, false, 16, 0)
+    attributes.tangent.pointer(gl.FLOAT, false, 16, 8)
+
+    this.idBuffer.bind()
+    attributes.pickId.pointer(gl.UNSIGNED_BYTE, false)
+
+    gl.drawArrays(gl.TRIANGLES, 0, numVertices)
+
+    return pickOffset + this.shape[0] * this.shape[1]
   }
 })()
 
@@ -237,6 +297,8 @@ proto.update = function(options) {
   this.positionBuffer.update(new Float32Array(positions))
   this.colorBuffer.update(new Uint8Array(colors))
   this.idBuffer.update(new Uint32Array(ids))
+
+  console.log(ids)
 
   this.numVertices = ids.length
 }
