@@ -227,6 +227,11 @@ proto.update = function(options) {
 }
 
 proto.dispose = function() {
+  this.shader.dispose()
+  this.pickShader.dispose()
+  this.positionBuffer.dispose()
+  this.colorBuffer.dispose()
+  this.idBuffer.dispose()
   this.plot.removeObject(this)
 }
 
