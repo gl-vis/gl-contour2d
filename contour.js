@@ -119,7 +119,22 @@ proto.drawPick = (function() {
 })()
 
 proto.pick = function(x, y, value) {
-  return null
+  var pickOffset = this.pickOffset
+  var pointCount = this.shape[0] * this.shape[1]
+  if(value < pickOffset || value >= pickOffset + pointCount) {
+    return null
+  }
+  var pointId = value - pickOffset
+  var xData = this.xData
+  var yData = this.yData
+
+  return {
+    object:     this,
+    pointId:    pointId,
+    dataCoord: [
+          xData[pointId%this.shape[0]],
+          yData[(pointId/this.shape[0])|0] ]
+  }
 }
 
 function interpolate(array, point) {
