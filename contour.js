@@ -95,7 +95,7 @@ proto.draw = (function() {
     this.colorBuffer.bind()
     attributes.color.pointer(gl.UNSIGNED_BYTE, true)
 
-    gl.drawArrays(gl.TRIANGLES, 0, this.numVertices)
+    gl.drawArrays(gl.TRIANGLES, 0, numVertices)
 
     //Draw end caps
     uniforms.lineWidth = 0
@@ -108,7 +108,7 @@ proto.draw = (function() {
     this.colorBuffer.bind()
     attributes.color.pointer(gl.UNSIGNED_BYTE, true, 4*3, 0)
 
-    gl.drawArrays(gl.POINTS, 0, this.numVertices/3)
+    gl.drawArrays(gl.POINTS, 0, numVertices/3)
   }
 })()
 
