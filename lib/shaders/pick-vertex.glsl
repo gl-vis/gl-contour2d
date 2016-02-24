@@ -1,15 +1,18 @@
 precision mediump float;
 
 attribute vec2 position;
+attribute vec2 tangent;
 attribute vec4 pickId;
 
 uniform mat3 viewTransform;
+uniform vec2 screenShape;
+uniform float lineWidth;
 uniform vec4 pickOffset;
 
 varying vec4 fragId;
 
 void main() {
-  vec4 id = pickId + pickOffset;
+  vec4 id = pickOffset + pickId;
   id.y += floor(id.x / 256.0);
   id.x -= floor(id.x / 256.0) * 256.0;
 
@@ -22,5 +25,11 @@ void main() {
   fragId = id / 255.0;
 
   vec3 vPosition = viewTransform * vec3(position, 1.0);
-  gl_Position = vec4(vPosition.xy, 0, vPosition.z);
+  vec2 vTangent = normalize(viewTransform * vec3(tangent, 0)).xy;
+  vec2 offset = vec2(vTangent.y, -vTangent.x) / screenShape;
+
+  gl_Position = vec4(
+    vPosition.xy + offset * lineWidth * vPosition.z,
+    0,
+    vPosition.z);
 }

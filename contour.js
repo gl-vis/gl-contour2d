@@ -25,6 +25,7 @@ function GLContour2D(
   this.idBuffer       = idBuffer
   this.xData          = []
   this.yData          = []
+  this.data           = []
   this.shape          = [0,0]
   this.bounds         = [Infinity, Infinity, -Infinity, -Infinity]
   this.pickOffset     = 0
@@ -113,13 +114,85 @@ proto.draw = (function() {
 })()
 
 proto.drawPick = (function() {
+  var MATRIX = [
+    1, 0, 0,
+    0, 1, 0,
+    0, 0, 1
+  ]
+
+  var SCREEN_SHAPE = [0,0]
+  var PICK_OFFSET = [0,0,0,0]
+
   return function(pickOffset) {
-    return pickOffset
+    var plot          = this.plot
+    var shader        = this.pickShader
+    var bounds        = this.bounds
+    var numVertices   = this.numVertices
+
+    var gl            = plot.gl
+    var viewBox       = plot.viewBox
+    var dataBox       = plot.dataBox
+
+    var boundX  = bounds[2]  - bounds[0]
+    var boundY  = bounds[3]  - bounds[1]
+    var dataX   = dataBox[2] - dataBox[0]
+    var dataY   = dataBox[3] - dataBox[1]
+
+    MATRIX[0] = 2.0 * boundX / dataX
+    MATRIX[4] = 2.0 * boundY / dataY
+    MATRIX[6] = 2.0 * (bounds[0] - dataBox[0]) / dataX - 1.0
+    MATRIX[7] = 2.0 * (bounds[1] - dataBox[1]) / dataY - 1.0
+
+    SCREEN_SHAPE[0] = viewBox[2] - viewBox[0]
+    SCREEN_SHAPE[1] = viewBox[3] - viewBox[1]
+
+    this.pickOffset = pickOffset
+    PICK_OFFSET[0] =  pickOffset       & 0xff
+    PICK_OFFSET[1] = (pickOffset>>>8)  & 0xff
+    PICK_OFFSET[2] = (pickOffset>>>16) & 0xff
+    PICK_OFFSET[3] =  pickOffset>>>24
+
+    shader.bind()
+
+    var lineWidth = this.lineWidth * plot.pickPixelRatio
+
+    var uniforms = shader.uniforms
+    uniforms.viewTransform  = MATRIX
+    uniforms.screenShape    = SCREEN_SHAPE
+    uniforms.lineWidth      = lineWidth
+    uniforms.pickId         = PICK_OFFSET
+
+    var attributes = shader.attributes
+
+    //Draw lines
+    this.positionBuffer.bind()
+    attributes.position.pointer(gl.FLOAT, false, 16, 0)
+    attributes.tangent.pointer(gl.FLOAT, false, 16, 8)
+
+    this.idBuffer.bind()
+    attributes.pickId.pointer(gl.UNSIGNED_BYTE, false)
+
+    gl.drawArrays(gl.TRIANGLES, 0, this.numVertices)
+
+    return this.pickOffset + this.shape[0] * this.shape[1]
   }
 })()
 
 proto.pick = function(x, y, value) {
-  return null
+  var pickOffset = this.pickOffset
+  var pointCount = this.shape[0] * this.shape[1]
+  if(value < pickOffset || value >= pickOffset + pointCount) {
+    return null
+  }
+  var pointId = value - pickOffset
+  var px = (pointId%this.shape[0])|0
+  var py = (pointId/this.shape[0])|0
+  var points = this.data
+  return {
+    object:    this,
+    pointId:   pointId,
+    dataCoord: [ this.xData[px], this.yData[py] ]
+  }
 }
 
 function interpolate(array, point) {
@@ -165,6 +238,7 @@ proto.update = function(options) {
 
   this.xData = x
   this.yData = y
+  this.shape = shape
 
   this.lineWidth = options.lineWidth || 1
 
@@ -189,7 +263,7 @@ proto.update = function(options) {
       var a = c_positions[e[0]]
       var b = c_positions[e[1]]
 
-      var pointId = Math.round(a[0]) + shape[0] * Math.round(a[1])
+      var pointId = Math.floor(a[0]) + shape[0] * Math.floor(a[1])
 
       var ax = interpolate(x, a[0])
       var ay = interpolate(y, a[1])
