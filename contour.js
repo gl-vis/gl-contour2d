@@ -58,6 +58,10 @@ proto.draw = (function() {
     var bounds        = this.bounds
     var numVertices   = this.numVertices
 
+    if(!numVertices) {
+      return
+    }
+
     var gl            = plot.gl
     var viewBox       = plot.viewBox
     var dataBox       = plot.dataBox
