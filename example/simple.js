@@ -65,6 +65,13 @@ var heatmap = createContour(plot, {
     0, 1, 0, 1,
     1, 0, 0, 1,
     1, 1, 0, 1
+  ],
+  fillColors: [
+    1, 1, 0, 1,
+    0, 1, 1, 1,
+    1, 0, 1, 1,
+    0, 0, 0, 1,
+    0.8, 1, 0.3, 1
   ]
 })
 console.timeEnd('createContour')
