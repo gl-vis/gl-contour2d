@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/gl-vis/gl-contour2d#readme",
   "dependencies": {
+    "binary-search-bounds": "^2.0.0",
     "cdt2d": "^1.0.0",
     "gl-buffer": "^2.1.2",
     "gl-shader": "^4.0.5",
