@@ -13,11 +13,11 @@ window.addEventListener('resize', fit(canvas, null, +window.devicePixelRatio), f
 var gl = canvas.getContext('webgl')
 
 var aspect = gl.drawingBufferWidth / gl.drawingBufferHeight
-var dataBox = [-10,-10/aspect,10,10/aspect]
+var dataBox = [-10, -10 / aspect, 10, 10 / aspect]
 
 function makeTicks(lo, hi) {
   var result = []
-  for(var i=lo; i<=hi; ++i) {
+  for(var i = lo; i <= hi; ++i) {
     result.push({
       x: i,
       text: i + ''
@@ -30,11 +30,11 @@ var options = {
   gl:             gl,
   dataBox:        dataBox,
   title:          '100 million points',
-  ticks:          [ makeTicks(-20,20), makeTicks(-20,20) ],
+  ticks:          [makeTicks(-20, 20), makeTicks(-20, 20)],
   labels:         ['x', 'y'],
   pixelRatio:     +window.devicePixelRatio,
-  tickMarkWidth:  [2,2,2,2],
-  tickMarkLength: [6,6,6,6]
+  tickMarkWidth:  [2, 2, 2, 2],
+  tickMarkLength: [6, 6, 6, 6]
 }
 
 var plot = createPlot(options)
@@ -47,34 +47,56 @@ selectBox.enabled = false
 
 var spikes = createSpikes(plot)
 
-var z = new Array(5*20)
-var ptr = 0
-for(var i=0; i<5; ++i)
-for(var j=0; j<20; ++j) {
-  z[ptr++] = (i * i)/(5*5) + (j * j)/(20*20)
+// left closed, right open range function
+function range(start, end, specifiedIncrement) {
+  var increment = specifiedIncrement || 1
+  var result = []
+  for(var n = start; n < end; n += increment)
+    result.push(n)
+  return result
 }
 
+// making and populating the grid
+
+var xRange = range(-6, 7)
+var yRange = range(-5, 6)
+
+var z = new Array(xRange.length * yRange.length)
+
+for(var i = 0; i < xRange.length; i++)
+  for(var j = 0; j < yRange.length; j++)
+    z[i * yRange.length + j] = Math.pow(xRange[i], 2) / (4 * 4) + Math.pow(yRange[j], 2) / (3 * 3)
+
+
+// creating the plot
+
 console.time('createContour')
+
 var heatmap = createContour(plot, {
+  x:           xRange,
+  y:           yRange,
   z:           z,
-  shape:       [5,20],
-  levels: [0.1, 0.5, 1, 1.5],
-  lineWidth: 4,
+  shape:       [xRange.length, yRange.length], // it doesn't calculate shape out even if x and y optionals are passed
+  levels:      [0.1, 0.5, 1, 1.5],
+  lineWidth:   4,
   levelColors: [
-    0, 0, 1, 1,
-    0, 1, 0, 1,
     1, 0, 0, 1,
-    1, 1, 0, 1
+    0, 1, 0, 1,
+    0, 0, 1, 1,
+    0, 0, 0, 1
   ],
-  fillColors: [
-    1, 1, 0, 1,
-    0, 1, 1, 1,
-    1, 0, 1, 1,
-    0, 0, 0, 1,
-    0.8, 1, 0.3, 1
+  fillColors:  [
+    1, 0, 0, .3,
+    0, 1, 0, .3,
+    0, 0, 1, .3,
+    0, 0, 0, .5,
+    0, 0, 0, .2
   ]
 })
+
 console.timeEnd('createContour')
+
+// adding interactions (optional)
 
 var lastX = 0, lastY = 0
 var boxStart = [0,0]
@@ -159,6 +181,7 @@ mouseWheel(function(dx, dy, dz) {
 
   return true
 })
+
 
 function render() {
   requestAnimationFrame(render)
