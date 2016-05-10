@@ -5,7 +5,8 @@ gl-contour2d
 To run the example, follow these steps:
 
 ```
-npm install gl-contour2d 
+git clone https://github.com/gl-vis/gl-contour2d.git
+cd gl-contour2d
 mkdir dist
 browserify contour.js -o dist/bundle.js
 browserify example/simple.js -o dist/simple_example_bundle.js
