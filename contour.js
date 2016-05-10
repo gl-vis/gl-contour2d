@@ -373,10 +373,10 @@ proto.update = function (options) {
 
       // Color triangle using centroid data
       var l = bsearch.le(levels, zlevel) + 1
-      var cr = (255 * levelColors[4 * l + 0]) | 0
-      var cg = (255 * levelColors[4 * l + 1]) | 0
-      var cb = (255 * levelColors[4 * l + 2]) | 0
-      var ca = (255 * levelColors[4 * l + 3]) | 0
+      var cr = (255 * fillColors[4 * l + 0]) | 0
+      var cg = (255 * fillColors[4 * l + 1]) | 0
+      var cb = (255 * fillColors[4 * l + 2]) | 0
+      var ca = (255 * fillColors[4 * l + 3]) | 0
 
       fillCellColors.push(
         cr, cg, cb, ca,
