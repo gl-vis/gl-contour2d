@@ -8,6 +8,7 @@ var createBuffer = require('gl-buffer')
 var ndarray = require('ndarray')
 var surfaceNets = require('surface-nets')
 var cdt2d = require('cdt2d')
+var cleanPSLG = require('clean-pslg')
 var bsearch = require('binary-search-bounds')
 
 var shaders = require('./lib/shaders')
@@ -333,6 +334,7 @@ proto.update = function (options) {
   var fillVerts = 0
 
   if (fillColors) {
+    cleanPSLG(fillPositions, fillCells)
     var fillMesh = cdt2d(fillPositions, fillCells, {
       delaunay: false
     })
