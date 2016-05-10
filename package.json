@@ -27,6 +27,7 @@
   "dependencies": {
     "binary-search-bounds": "^2.0.0",
     "cdt2d": "^1.0.0",
+    "clean-pslg": "^1.1.0",
     "gl-buffer": "^2.1.2",
     "gl-shader": "^4.0.5",
     "glslify": "^4.0.0",
