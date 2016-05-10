@@ -8,29 +8,44 @@ var createPlot = require('gl-plot2d')
 
 var canvas = document.createElement('canvas')
 document.body.appendChild(canvas)
-window.addEventListener('resize', fit(canvas, null, +window.devicePixelRatio), false)
+window.addEventListener('resize', fit(canvas, null, +window.devicePixelRatio), false) // not working well at the moment
 
 var gl = canvas.getContext('webgl')
 
 var aspect = gl.drawingBufferWidth / gl.drawingBufferHeight
-var dataBox = [-10, -10 / aspect, 10, 10 / aspect]
 
-function makeTicks(lo, hi) {
+// visible data box
+var initialVisibleTickItemRangeX = [-10, 10] // initially show at most 10 ticks to the left and 10 to the right
+var initialVisibleTickItemRangeY = [-6, 6] // initially show at most 6 ticks up and 6 ticks down
+var tickItemRange = aspect > 1 ? initialVisibleTickItemRangeX : initialVisibleTickItemRangeY // make sure it fits
+console.log(tickItemRange)
+var initialDataBox = [
+  tickItemRange[0], tickItemRange[0] / aspect,
+  tickItemRange[1], tickItemRange[1] / aspect
+]
+var dataBox = initialDataBox.slice() // will be mutated by mouse interactions
+
+// left closed, right open range function
+function range(start, end, specifiedIncrement) {
+  var increment = specifiedIncrement || 1
   var result = []
-  for(var i = lo; i <= hi; ++i) {
-    result.push({
-      x: i,
-      text: i + ''
-    })
-  }
+  for(var n = start; n < end; n += increment)
+    result.push(n)
   return result
+}
+
+function makeTick(i) {
+  return {
+    x: i,
+    text: i.toString()
+  }
 }
 
 var options = {
   gl:             gl,
   dataBox:        dataBox,
   title:          '100 million points',
-  ticks:          [makeTicks(-20, 20), makeTicks(-20, 20)],
+  ticks:          [range(-20, 20).map(makeTick), range(-20, 20).map(makeTick)],
   labels:         ['x', 'y'],
   pixelRatio:     +window.devicePixelRatio,
   tickMarkWidth:  [2, 2, 2, 2],
@@ -47,16 +62,7 @@ selectBox.enabled = false
 
 var spikes = createSpikes(plot)
 
-// left closed, right open range function
-function range(start, end, specifiedIncrement) {
-  var increment = specifiedIncrement || 1
-  var result = []
-  for(var n = start; n < end; n += increment)
-    result.push(n)
-  return result
-}
-
-// making and populating the grid
+// making and populating the data grid
 
 var xRange = range(-6, 7)
 var yRange = range(-5, 6)
