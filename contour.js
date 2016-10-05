@@ -17,7 +17,6 @@ function GLContour2D (
   plot,
   shader,
   fillShader,
-  pickShader,
   positionBuffer,
   colorBuffer,
   idBuffer,
@@ -26,18 +25,14 @@ function GLContour2D (
   this.plot = plot
   this.shader = shader
   this.fillShader = fillShader
-  this.pickShader = pickShader
   this.positionBuffer = positionBuffer
   this.colorBuffer = colorBuffer
   this.idBuffer = idBuffer
   this.fillPositionBuffer = fillPositionBuffer
   this.fillColorBuffer = fillColorBuffer
   this.fillVerts = 0
-  this.xData = []
-  this.yData = []
   this.shape = [0, 0]
   this.bounds = [Infinity, Infinity, -Infinity, -Infinity]
-  this.pickOffset = 0
   this.numVertices = 0
   this.lineWidth = 1
 }
@@ -195,9 +190,6 @@ proto.update = function (options) {
 
   var xs = 1.0 / (hix - lox)
   var ys = 1.0 / (hiy - loy)
-
-  this.xData = x
-  this.yData = y
 
   this.lineWidth = options.lineWidth || 1
 
@@ -403,7 +395,6 @@ function createContour2D (plot, options) {
   var gl = plot.gl
 
   var shader = createShader(gl, shaders.vertex, shaders.fragment)
-  var pickShader = createShader(gl, shaders.pickVertex, shaders.pickFragment)
   var fillShader = createShader(gl, shaders.fillVertex, shaders.fragment)
 
   var positionBuffer = createBuffer(gl)
@@ -417,7 +408,6 @@ function createContour2D (plot, options) {
     plot,
     shader,
     fillShader,
-    pickShader,
     positionBuffer,
     colorBuffer,
     idBuffer,
