@@ -30,7 +30,7 @@
     "clean-pslg": "^1.1.0",
     "gl-buffer": "^2.1.2",
     "gl-shader": "^4.0.5",
-    "glslify": "^4.0.0",
+    "glslify": "^6.1.0",
     "iota-array": "^1.0.0",
     "ndarray": "^1.0.18",
     "surface-nets": "^1.0.2"
