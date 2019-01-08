@@ -39,10 +39,14 @@
     "beefy": "^2.1.5",
     "browserify": "^12.0.1",
     "canvas-fit": "^1.5.0",
+    "chttps": "^1.0.6",
     "gl-plot2d": "^1.1.6",
     "gl-select-box": "^1.0.1",
     "gl-spikes2d": "^1.0.1",
     "mouse-change": "^1.2.1",
     "mouse-wheel": "^1.0.2"
+  },
+  "scripts": {
+    "postshrinkwrap": "chttps ."
   }
 }
