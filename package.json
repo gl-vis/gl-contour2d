@@ -30,19 +30,23 @@
     "clean-pslg": "^1.1.0",
     "gl-buffer": "^2.1.2",
     "gl-shader": "^4.0.5",
-    "glslify": "^6.1.0",
+    "glslify": "^7.0.0",
     "iota-array": "^1.0.0",
     "ndarray": "^1.0.18",
     "surface-nets": "^1.0.2"
   },
   "devDependencies": {
     "beefy": "^2.1.5",
-    "browserify": "^12.0.1",
+    "browserify": "^16.2.3",
     "canvas-fit": "^1.5.0",
+    "chttps": "^1.0.6",
     "gl-plot2d": "^1.1.6",
     "gl-select-box": "^1.0.1",
     "gl-spikes2d": "^1.0.1",
     "mouse-change": "^1.2.1",
     "mouse-wheel": "^1.0.2"
+  },
+  "scripts": {
+    "postshrinkwrap": "chttps ."
   }
 }
