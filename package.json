@@ -25,26 +25,25 @@
   },
   "homepage": "https://github.com/gl-vis/gl-contour2d#readme",
   "dependencies": {
-    "binary-search-bounds": "^2.0.0",
+    "binary-search-bounds": "^2.0.4",
     "cdt2d": "^1.0.0",
-    "clean-pslg": "^1.1.0",
+    "clean-pslg": "^1.1.2",
     "gl-buffer": "^2.1.2",
-    "gl-shader": "^4.0.5",
+    "gl-shader": "^4.2.1",
     "glslify": "^7.0.0",
     "iota-array": "^1.0.0",
     "ndarray": "^1.0.18",
     "surface-nets": "^1.0.2"
   },
   "devDependencies": {
-    "beefy": "^2.1.5",
     "browserify": "^16.2.3",
     "canvas-fit": "^1.5.0",
     "chttps": "^1.0.6",
-    "gl-plot2d": "^1.1.6",
-    "gl-select-box": "^1.0.1",
-    "gl-spikes2d": "^1.0.1",
-    "mouse-change": "^1.2.1",
-    "mouse-wheel": "^1.0.2"
+    "gl-plot2d": "^1.4.2",
+    "gl-select-box": "^1.0.3",
+    "gl-spikes2d": "^1.0.2",
+    "mouse-change": "^1.4.0",
+    "mouse-wheel": "^1.2.0"
   },
   "scripts": {
     "postshrinkwrap": "chttps ."
